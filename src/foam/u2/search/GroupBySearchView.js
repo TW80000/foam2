@@ -20,202 +20,96 @@ foam.CLASS({
   name: 'GroupBySearchView',
   extends: 'foam.u2.View',
 
+  documentation: `
+    Specification:
+      - Display a list of all values for some property.
+      - Display the count of objects in the DAO that have that value for that
+        property.
+      - Hovering on a list item will update the predicate, but only while the
+        mouse is over that list item. When the mouse leaves, the predicate will
+        no longer use the value associated with that list item to filter the
+        view.
+      - Clicking on a list item will update the predicate. Removing the mouse
+        from the list item after clicking will not reset the predicate.
+  `,
+
   requires: [
-    'foam.dao.FnSink',
-    'foam.mlang.Constant',
+    'foam.dao.mdao',
     'foam.mlang.predicate.True',
     'foam.mlang.sink.Count',
-    'foam.mlang.sink.GroupBy',
-    'foam.u2.view.ChoiceView'
+    'foam.mlang.sink.GroupBy'
   ],
-
-  css: `
-    ^ select {
-      min-width: 220px;
-    }
-  `,
 
   properties: [
     {
-      name: 'view'
-    },
-    {
-      class: 'foam.u2.ViewSpec',
-      name: 'viewSpec',
-      value: { class: 'foam.u2.view.ChoiceView' }
+      name: 'property',
+      documentation: `The property that this view is filtering by.`,
+      required: true
     },
     {
       class: 'foam.dao.DAOProperty',
       name: 'dao',
+      documentation: ``, // TODO
       required: true,
     },
     {
-      name: 'property',
-      required: true
+      name: 'groupedDAO',
+      factory: function(dao) {
+        return this.MDAO.create();
+      }
     },
     {
       name: 'name',
+      documentation: `Required by SearchManager.`,
       expression: function(property) {
         return property.name;
       }
     },
     {
-      class: 'Class',
-      name: 'op',
-      value: 'foam.mlang.predicate.Eq'
-    },
-    {
       name: 'predicate',
+      documentation: ``,
       factory: function() {
         return this.True.create();
       }
     },
     {
-      class: 'Int',
-      name: 'width',
-      value: 17
-    },
-    {
-      class: 'String',
-      name: 'label',
-      expression: function(property) {
-        return property.label;
-      }
-    },
-    {
-      class: 'Function',
-      name: 'aFormatLabel',
-      value: function(key) {
-        return Promise.resolve('' + key);
-      }
-    },
-    'previewMode',
-    'hardData'
+      name: 'list',
+      documentation: `` // TODO
+    }
   ],
 
   methods: [
     function clear() {
-      this.view.data = '';
-      this.hardData = undefined;
+      // TODO
+    },
+
+    function init() {
+      this.dao$proxy.listen();
     },
 
     function initE() {
-      var self = this;
+      var groupBySink = this.GroupBy.create({
+        arg1: this.property,
+        arg2: this.Count.create()
+      });
 
       this
         .addClass(this.myClass())
-        .tag(this.viewSpec, {
-          label$: this.label$,
-          alwaysFloatLabel: true,
-          dynamicSize: true,
-          maxSize: 10
-        }, this.view$)
-        .on('click', function(e) {
-          try {
-            self.previewMode = false;
-            var data = self.view.choices[e.target.value][0];
-            self.hardData = data;
-          } catch (x) {}
-        })
-        .on('mouseover', function(e) {
-          try {
-            var data = self.view.choices[e.target.value][0];
+        .selectSink(this.dao$proxy.select(groupBySink), function() {
 
-            if ( ! self.previewMode ) {
-              self.previewMode = true;
-              self.hardData = self.view.data;
-            }
-
-            self.view.data = data;
-          } catch (x) {}
-        })
-        .on('mouseout', function(e) {
-          self.view.data = self.hardData;
-          if ( self.hardData === undefined ) self.view.data = '';
-        })
-        .onDetach(
-          this.dao$proxy.listen(
-            this.FnSink.create({ fn: this.updateDAO })
-          )
-        );
-
-      this.updateDAO();
-
-      this.view.data$.sub(this.updatePredicate);
-    },
-
-    function updatePredicate_(choice) {
-      var exists = typeof choice !== 'undefined' && choice !== '';
-      this.predicate = exists ? this.op.create({
-        arg1: this.property,
-        arg2: this.Constant.create({ value: choice })
-      }) : this.True.create();
-    },
-
-    function formatLabels(keys) {
-      return Promise.all(keys.map(this.aFormatLabel.bind(this)));
-    }
-  ],
-
-  listeners: [
-    {
-      name: 'updateDAO',
-      isMerged: true,
-      mergeDelay: 100,
-      code: function() {
-        var self = this;
-        this.dao.select(this.GroupBy.create({
-          arg1: this.property,
-          arg2: this.Count.create()
-        })).then(function(groups) {
-          var options = [];
-          var selected;
-          var sortedKeys = groups.sortedKeys();
-          self.formatLabels(sortedKeys).then(function(labels) {
-            for ( var i = 0 ; i < sortedKeys.length ; i++ ) {
-              var key = sortedKeys[i];
-              if ( typeof key === 'undefined' ) continue;
-              if ( key === '' ) continue;
-              var count = foam.String.intern(
-                  '(' + groups.groups[key].value + ')');
-              var subKey = labels[i].substring(0, self.width - count.length - 3);
-              // ???: Why do we need to clean the key?
-              var cleanKey = foam.core.Enum.isInstance(self.property) ?
-                  self.property.of[key].label :
-                  subKey.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                      .replace(/"/g, '&quot;');
-
-              if ( self.view && self.view.data === key ) {
-                selected = key;
-              }
-
-              options.push([
-                key,
-                cleanKey + foam.String.intern(
-                    Array(self.width - subKey.length - count.length).join(' ')) +
-                    count
-              ]);
-            }
-
-            options.splice(0, 0, ['', '--']);
-
-            self.view.choices = options;
-            if ( typeof selected !== 'undefined' ) {
-              var oldData = self.view.data;
-              self.view.data = selected;
-              if ( typeof oldData === 'undefined' || oldData === '' ) {
-                self.updatePredicate_(selected);
-              }
-            }
-          });
         });
-      }
-    },
-    {
-      name: 'updatePredicate',
-      code: function(_, __, ___, slot) {
-        this.updatePredicate_(slot.get());
-      }
+      
+      this.dao.select(sink).then((result) => {
+        var keys = result.sortedKeys();
+        var groups = result.groups;
+        keys.forEach((key) => {
+          this.start('div')
+            .addClass('list-item')
+            .start('span').add(key).end()
+            .start('span').add('(', groups[key].value, ')').end()
+          .end();
+        });
+      });
     }
   ]
 });
