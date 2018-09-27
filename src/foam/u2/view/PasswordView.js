@@ -49,6 +49,11 @@ foam.CLASS({
     {
       class: 'Boolean',
       name: 'passwordIcon'
+    },
+    {
+      class: 'String',
+      name: 'type',
+      value: 'password'
     }
   ],
 
