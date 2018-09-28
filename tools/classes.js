@@ -84,9 +84,11 @@ var classes = [
   'foam.dao.ProxyJournal',
   'foam.dao.CompositeJournal',
   'foam.dao.FileJournal',
+  'foam.dao.RoutingJournal',
+  'foam.dao.RoutingJournalTest',
+  'foam.dao.RoutingJDAO',
   'foam.dao.WriteOnlyJDAO',
   'foam.dao.WriteOnlyFileJournal',
-  'foam.dao.RoutingJournal',
   'foam.dao.BaseClientDAO',
   'foam.dao.ClientDAO',
   'foam.dao.ClientSink',
@@ -248,11 +250,9 @@ var classes = [
   'foam.nanos.fs.File',
 
   'foam.crypto.hash.Hasher',
-  'foam.crypto.hash.Hashable',
   'foam.crypto.hash.HashableTest',
 
   'foam.crypto.sign.Signer',
-  'foam.crypto.sign.Signable',
   'foam.crypto.sign.SignableTest',
 
   'foam.nanos.http.Command',
@@ -266,6 +266,7 @@ var classes = [
   'foam.nanos.servlet.ServletMapping',
   'foam.nanos.servlet.ErrorPageMapping',
   'foam.nanos.servlet.FilterMapping',
+  'foam.nanos.servlet.VirtualHostRoutingServlet',
 
   'foam.lib.query.TestModel',
   'foam.lib.query.FooEnum',
@@ -275,6 +276,7 @@ var classes = [
   'foam.parse.QueryParserUserTest',
   'foam.util.EmailTest',
   'foam.util.PasswordTest',
+  'foam.util.SecurityUtilTest',
   'foam.test.TestObj',
   'foam.core.FObjectTest',
 
