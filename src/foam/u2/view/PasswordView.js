@@ -54,6 +54,9 @@ foam.CLASS({
       class: 'String',
       name: 'type',
       value: 'password'
+    },
+    {
+      name: 'inputElement'
     }
   ],
 
@@ -66,7 +69,7 @@ foam.CLASS({
         start(foam.u2.tag.Input, {
           type: this.type,
           data$: this.data$
-        }).
+        }, this.inputElement$).
           addClass('input-field').addClass('full-width-input-password').
         end().
         start('img').show(this.passwordIcon$).addClass('input-image').
@@ -78,6 +81,7 @@ foam.CLASS({
     function visibleIcon(visibilityIcon, type) {
       this.visibilityIcon = visibilityIcon;
       this.type = type;
+      this.inputElement.setAttribute('type', type);
       this.passwordInvisible = ! this.passwordInvisible;
       this.enableClass('property-password', this.passwordInvisible);
     }
