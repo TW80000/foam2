@@ -35,7 +35,8 @@ foam.LIB({
           return b ? "true" : "false";
         },
         Number: function(n) {
-          return '' + n + (n > Math.pow(2, 31) ? 'L' : '');
+          return '' + n +
+            (n > Math.pow(2, 31) || n < -Math.pow(2,31) ? 'L' : '');
         },
         FObject: function(o) {
           return o.asJavaValue();
@@ -68,6 +69,11 @@ ${Object.keys(o).map(function(k) {
           o = o.replace(/\\/g, '\\\\')
           return `java.util.regex.Pattern.compile("${o}")`
         },
+        Date: function(d) {
+          var n = d.getTime();
+          return `new java.util.Date(` + n +
+            (n > Math.pow(2, 31) || n < -Math.pow(2,31) ? 'L' : '') + `)`
+        }
       })
     },
     {
@@ -483,6 +489,7 @@ foam.LIB({
 
       cls.name = this.model_.name;
       cls.package = this.model_.package;
+      cls.source = this.model_.source;
       cls.abstract = this.model_.abstract;
       cls.documentation = this.model_.documentation;
 
