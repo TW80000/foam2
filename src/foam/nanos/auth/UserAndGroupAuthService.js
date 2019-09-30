@@ -160,8 +160,8 @@ foam.CLASS({
 
         Session session = x.get(Session.class);
         session.setUserId(user.getId());
-        // Change the session's access token to prevent session fixation attacks
-        session.setAccessToken(java.util.UUID.randomUUID().toString());
+        // Change the session id to prevent session fixation attacks.
+        session.setId(java.util.UUID.randomUUID().toString());
         ((DAO) getLocalSessionDAO()).put(session);
         session.setContext(session.applyTo(session.getContext()));
 

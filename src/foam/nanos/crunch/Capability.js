@@ -40,11 +40,10 @@ foam.CLASS({
   ],
 
   properties: [
-    
     {
       name: 'id',
       class: 'String'
-    }, 
+    },
     {
       name: 'icon',
       class: 'Image',
@@ -60,7 +59,7 @@ foam.CLASS({
       class: 'String',
       view: {
         class: 'foam.u2.tag.TextArea',
-        rows: 12, 
+        rows: 12,
         cols: 120
       }
     },
@@ -101,7 +100,6 @@ foam.CLASS({
       visibility: 'RO'
     }
   ],
-
 
   methods: [
     {

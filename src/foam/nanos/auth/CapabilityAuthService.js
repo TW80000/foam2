@@ -39,7 +39,7 @@ foam.CLASS({
       if ( user != null && checkUser(x, user, permission) ) return true;
       return getDelegate().check(x, permission);
       `
-    },     
+    },
     {
       name: 'checkUser',
       documentation: `

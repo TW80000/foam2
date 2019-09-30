@@ -350,7 +350,7 @@ foam.CLASS({
           {
             args: [self.name],
             predicateFactory: function(e) {
-              return e.AND(
+              return e.OR(e.NOT(e.HAS(self)), e.AND(
                 e.LTE(
                   self,
                   // Maximum date supported by FOAM
@@ -363,7 +363,7 @@ foam.CLASS({
                   // (bounded by JavaScript's limit)
                   new Date(-8640000000000000)
                 )
-              )
+              ))
             },
             errorString: 'Invalid date value'
           }
