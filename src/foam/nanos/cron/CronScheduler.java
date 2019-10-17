@@ -44,7 +44,7 @@ public class CronScheduler
   }
 
   public void start() {
-    cronDAO_ = (DAO) getX().get("cronDAO");
+    cronDAO_ = ((DAO) getX().get("cronDAO")).inX(getX());
 
     new Thread(this).start();
   }

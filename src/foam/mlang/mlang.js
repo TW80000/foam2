@@ -324,6 +324,11 @@ foam.CLASS({
 
   documentation: 'Property for Predicate values.',
 
+  requires: [
+    'foam.mlang.Expr',
+    'foam.u2.view.FObjectView'
+  ],
+
   properties: [
     ['type', 'foam.mlang.predicate.Predicate'],
     {
