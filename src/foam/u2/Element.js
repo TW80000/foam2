@@ -2626,6 +2626,22 @@ foam.CLASS({
   ]
 });
 
+foam.CLASS({
+  package: 'foam.u2',
+  name: 'ProjectedPropertyRefinement',
+  refines: 'foam.core.ProjectedProperty',
+
+  requires: [
+    'foam.u2.view.ProjectedPropertyView'
+  ],
+
+  properties: [
+    {
+      name: 'view',
+      value: { class: 'foam.u2.view.ProjectedPropertyView' }
+    }
+  ],
+});
 
 foam.CLASS({
   package: 'foam.u2',

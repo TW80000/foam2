@@ -691,6 +691,112 @@ foam.CLASS({
 
 foam.CLASS({
   package: 'foam.core',
+  name: 'GlobalReferencePropertyImpl',
+
+  documentation: 'An implementation detail of GlobalReferenceProperty-ies.',
+
+  properties: [
+    {
+      class: 'Object',
+      javaType: 'Object',
+      name: 'instanceId',
+    },
+    {
+      class: 'String',
+      name: 'daoKey'
+    }
+  ]
+});
+
+// NOTE: Could use this for approval request as well.
+foam.CLASS({
+  package: 'foam.core',
+  name: 'GlobalReferenceProperty',
+  extends: 'FObjectProperty',
+
+  properties: [
+    ['of', 'foam.core.GlobalReferencePropertyImpl']
+  ],
+
+  methods: [
+    function installInProto(proto) {
+      this.SUPER(proto);
+      var self = this;
+      Object.defineProperty(proto, self.name + '$find', {
+        get: function() {
+          var impl = this[self.name];
+          return this.__subContext__[impl.daoKey].find(impl.instanceId);
+        },
+        configurable: true
+      });
+    }
+  ]
+});
+
+foam.CLASS({
+  package: 'foam.core',
+  name: 'ProjectedPropertyImpl',
+
+  documentation: 'An implementation detail of ProjectedProperty-ies.',
+
+  properties: [
+    {
+      // class: 'FObjectProperty',
+      // of: 'Property',
+      javaType: 'foam.core.PropertyInfo',
+      javaInfoType: 'foam.core.AbstractObjectPropertyInfo',
+      name: 'underlyingProperty',
+      documentation: 'The property on another model that this property is a projection of.'
+    },
+    {
+      class: 'Class',
+      name: 'underlyingModel',
+      documentation: 'The model that underlyingProperty is defined on.'
+    },
+    {
+      class: 'GlobalReferenceProperty',
+      name: 'underlyingInstance',
+      documentation: 'The particular instance of underlyingModel that this should mirror a property of.'
+    },
+    {
+      // TODO: Is there a way to dynamically set the type of this based on underlyingProperty?
+      class: 'Object',
+      javaType: 'Object',
+      name: 'value',
+      // TODO: Should this be transient? Probably not, but worth considering.
+      documentation: 'The value of the ProjectedProperty. We sync this with the value of underlyingProperty.'
+    }
+  ]
+});
+
+foam.CLASS({
+  package: 'foam.core',
+  name: 'ProjectedProperty',
+  extends: 'FObjectProperty',
+
+  properties: [
+    ['of', 'foam.core.ProjectedPropertyImpl']
+  ],
+
+  methods: [
+    function installInProto(proto) {
+      this.SUPER(proto);
+      var self = this;
+      Object.defineProperty(proto, self.name + '$find', {
+        get: function() {
+          var impl = this[self.name];
+          return impl.underlyingInstance$find.then((instance) => {
+            return impl.underlyingProperty.f(instance);
+          });
+        },
+        configurable: true
+      });
+    }
+  ]
+});
+
+foam.CLASS({
+  package: 'foam.core',
   name: 'ModelUpgradeTypesRefinement',
   refines: 'foam.core.Model',
 

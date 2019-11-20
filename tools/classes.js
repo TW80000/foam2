@@ -20,6 +20,8 @@ var classes = [
   'foam.core.CoreTypesValidationTest',
   'foam.core.CoreTypesValidationTestModel',
   'foam.core.Validator',
+  'foam.core.GlobalReferencePropertyImpl',
+  'foam.core.ProjectedPropertyImpl',
   'foam.glang.EndOfTimeSpan',
   'foam.glang.EndOfDay',
   'foam.glang.EndOfWeek',
