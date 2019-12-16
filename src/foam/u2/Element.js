@@ -2606,8 +2606,8 @@ foam.CLASS({
 
 foam.CLASS({
   package: 'foam.u2',
-  name: 'ExprPropertyRefinement',
-  refines: 'foam.mlang.ExprProperty',
+  name: 'PredicatePropertyRefinement',
+  refines: 'foam.mlang.predicate.PredicateProperty',
   requires: [
     'foam.u2.view.FObjectPropertyView',
     'foam.u2.view.FObjectView'
@@ -2619,8 +2619,26 @@ foam.CLASS({
         class: 'foam.u2.view.FObjectPropertyView',
         writeView: {
           class: 'foam.u2.view.FObjectView',
-          of: 'foam.mlang.Expr'
+          of: 'foam.mlang.predicate.Predicate'
         }
+      }
+    }
+  ]
+});
+
+foam.CLASS({
+  package: 'foam.u2',
+  name: 'PasswordPropertyRefinement',
+  refines: 'foam.core.Password',
+  requires: [
+    'foam.u2.view.PasswordView'
+  ],
+  properties: [
+    {
+      name: 'view',
+      value: {
+        class: 'foam.u2.view.PasswordView',
+        passwordIcon: true
       }
     }
   ]

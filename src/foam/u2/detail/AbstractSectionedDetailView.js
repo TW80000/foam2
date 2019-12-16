@@ -302,6 +302,7 @@ foam.CLASS({
               });
             })).then(() => {
               if ( queuePos > this.queuePositionWhenLastUpdated_ ) {
+                final.sort((a, b) => a.order - b.order);
                 this.sections = final;
                 this.queuePositionWhenLastUpdated_ = queuePos;
               }
